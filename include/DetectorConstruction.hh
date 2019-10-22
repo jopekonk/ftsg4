@@ -8,6 +8,7 @@
 #include "GenericGeDetector.hh"
 
 class G4Box;
+class G4Polycone;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4Material;
@@ -34,6 +35,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
      MyMaterials*       fMat;
      G4Material*        fWorldMaterial;
+     G4Material*        fGeDetectorFlangeMaterial;
 
      G4double           fFTSMeasurementPos1;
      G4double           fFTSMeasurementPos2;
@@ -45,6 +47,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4Box*             fSolidWorld;    //pointer to the solid World
      G4LogicalVolume*   fLogicWorld;    //pointer to the logical World
      G4VPhysicalVolume* fPhysiWorld;    //pointer to the physical World
+
+     G4Polycone*        fSolidGeDetectorFlange;
+     G4LogicalVolume*   fLogicGeDetectorFlange;
+     G4VPhysicalVolume* fPhysiGeDetectorFlange;
 
      DetectorMessenger* fDetectorMessenger;  //pointer to the Messenger
 
