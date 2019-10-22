@@ -29,6 +29,11 @@ DetectorConstruction::DetectorConstruction()
 
   fGeDistanceSide = (180.-115.+25.-80.)*mm; // ISLTFTSA0004 drawing, 10 mm from tape
 
+  fTapePlasticThickness = 50.0*um;
+  fTapeMetalThickness   = 30.0*nm;
+  fTapeWidth            = 12.0*mm;
+  fTapeLength           = 1.0*m;
+
   // materials
   DefineMaterials();
 
@@ -54,6 +59,8 @@ void DetectorConstruction::DefineMaterials() {
   fMat = MyMaterials::GetInstance();
   fWorldMaterial = fMat->GetMaterial("Vacuum");
   fGeDetectorFlangeMaterial = fMat->GetMaterial("Aluminium");
+  fTapePlasticMaterial = fMat->GetMaterial("G4_MYLAR");
+  fTapeMetalMaterial = fMat->GetMaterial("Aluminium");
 
   // print table
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
@@ -187,14 +194,38 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
   scint3->Placement(2, fPhysiWorld, true);
 
   //
+  // Tape, aluminised mylar
+  // compose the geometryof a plastic tape with an aluminium backing
+  // Biaxially oriented PETP (BoPET) used in film applications is often called Mylar (trademark).
+  //
+  // Goodfellow ES301955	Polyethylene terephthalate Metallised Film,
+  // Film Polyester, PET, PETP (Polyethylene terephthalate polyester).
+  // Thickness:0.05mm, Ohms/Square:2, Surface Finish:Metallised On One Side, Metallised With:30 nm Aluminium
+  //
+  fSolidTapePlastic = new G4Box("TapePlastic", fTapeWidth/2.0, fTapeLength/2.0, fTapePlasticThickness/2.0);
+  fLogicTapePlastic = new G4LogicalVolume(fSolidTapePlastic, fTapePlasticMaterial, "TapePlastic");
+  fPhysiTapePlastic = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,fTapePlasticThickness/2.0),
+                                        "TapePlastic",
+                                        fLogicTapePlastic, fPhysiWorld,false,0,true);
+  fSolidTapeMetal = new G4Box("TapeMetal", fTapeWidth/2.0, fTapeLength/2.0, fTapeMetalThickness/2.0);
+  fLogicTapeMetal = new G4LogicalVolume(fSolidTapeMetal, fTapeMetalMaterial, "TapeMetal");
+  fPhysiTapeMetal = new G4PVPlacement(0, G4ThreeVector(0.0,0.0, fTapePlasticThickness+fTapeMetalThickness/2.0),
+                                        "TapeMetal",
+                                        fLogicTapeMetal, fPhysiWorld,false,0,true);
+
+  //
   // Visualization attributes
   //
   G4VisAttributes* visAttGeDetFlange = new G4VisAttributes( G4Colour(0.8,0.9,0.9) );
+  G4VisAttributes* visAttTapePlastic = new G4VisAttributes( G4Colour(0.2,0.2,0.8) );
+  G4VisAttributes* visAttTapeMetal   = new G4VisAttributes( G4Colour(0.8,0.2,0.2) );
   //visAttGeDetFlange->SetVisibility(true);
 
 
   fLogicWorld->SetVisAttributes(G4VisAttributes::Invisible);
   fLogicGeDetectorFlange->SetVisAttributes(visAttGeDetFlange);
+  fLogicTapePlastic->SetVisAttributes(visAttTapePlastic);
+  fLogicTapeMetal->SetVisAttributes(visAttTapeMetal);
 
 
   //

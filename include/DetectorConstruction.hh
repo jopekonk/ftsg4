@@ -37,6 +37,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      MyMaterials*       fMat;
      G4Material*        fWorldMaterial;
      G4Material*        fGeDetectorFlangeMaterial;
+     G4Material*        fTapePlasticMaterial;
+     G4Material*        fTapeMetalMaterial;
 
      G4double           fFTSMeasurementPos1;
      G4double           fFTSMeasurementPos2;
@@ -45,6 +47,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      // Distance of the Ge detector from the measurement position (middle of tape) to front face of the detector
      G4double           fGeDistanceSide;
 
+     G4double           fTapePlasticThickness;
+     G4double           fTapeMetalThickness;
+     G4double           fTapeWidth;
+     G4double           fTapeLength;
+
      G4Box*             fSolidWorld;    //pointer to the solid World
      G4LogicalVolume*   fLogicWorld;    //pointer to the logical World
      G4VPhysicalVolume* fPhysiWorld;    //pointer to the physical World
@@ -52,6 +59,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4Polycone*        fSolidGeDetectorFlange;
      G4LogicalVolume*   fLogicGeDetectorFlange;
      G4VPhysicalVolume* fPhysiGeDetectorFlange;
+
+     G4Box*             fSolidTapePlastic;
+     G4Box*             fSolidTapeMetal;
+     G4LogicalVolume*   fLogicTapePlastic;
+     G4LogicalVolume*   fLogicTapeMetal;
+     G4VPhysicalVolume* fPhysiTapePlastic;
+     G4VPhysicalVolume* fPhysiTapeMetal;
 
      DetectorMessenger* fDetectorMessenger;  //pointer to the Messenger
 
