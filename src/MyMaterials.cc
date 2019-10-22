@@ -202,7 +202,7 @@ void MyMaterials::CreateMaterials() {
   if(Vinyltoluene == NULL){
     G4cerr<<"Warning, failed to get Vinyltoluene (G4_PLASTIC_SC_VINYLTOLUENE) from NistManager"<<G4endl;
     density = 1.032*g/cm3;
-    Vinyltoluene= new G4Material("Vinyltoluene", density, 2);
+    Vinyltoluene= new G4Material("G4_PLASTIC_SC_VINYLTOLUENE", density, 2);
     Vinyltoluene->AddElement(elC, natoms=9);
     Vinyltoluene->AddElement(elH, natoms=10);
   }

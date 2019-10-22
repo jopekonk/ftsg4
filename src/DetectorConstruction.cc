@@ -1,9 +1,6 @@
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
 
-#include "G4Material.hh"
-#include "G4NistManager.hh"
-
 #include "G4Box.hh"
 #include "G4Polycone.hh"
 #include "G4LogicalVolume.hh"
@@ -52,16 +49,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct() {
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void DetectorConstruction::DefineMaterials() {
-// use G4-NIST materials data base
-G4NistManager* man = G4NistManager::Instance();
 
-//My materials
-fMat = MyMaterials::GetInstance();
-fWorldMaterial = fMat->GetMaterial("Vacuum");
-fGeDetectorFlangeMaterial = fMat->GetMaterial("Aluminium");
+  //My materials
+  fMat = MyMaterials::GetInstance();
+  fWorldMaterial = fMat->GetMaterial("Vacuum");
+  fGeDetectorFlangeMaterial = fMat->GetMaterial("Aluminium");
 
-// print table
-G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+  // print table
+  G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 
 }
 
@@ -144,13 +139,29 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
 
   fLogicGeDetectorFlange = new G4LogicalVolume(fSolidGeDetectorFlange, fGeDetectorFlangeMaterial, "GeDetFlange", 0, 0, 0);
   fPhysiGeDetectorFlange = new G4PVPlacement(rotMatGeDetFlange, G4ThreeVector(-fGeDistanceSide, fFTSMeasurementPos3, 0.0*mm),
-				"GeDetFlange",           //its name
-				fLogicGeDetectorFlange,        //its logical volume
-				fPhysiWorld,       //its mother
-				false,             //no boolean operat
-				0,            //copy number
-				true);     //overlap check
+				"GeDetFlange",            //its name
+				fLogicGeDetectorFlange,   //its logical volume
+				fPhysiWorld,              //its mother
+				false,                    //no boolean operat
+				0,                        //copy number
+				true);                    //overlap check
 
+  //
+  // Plastic scintillator detectors (beta detectors)
+  //
+  PlasticScintillator* scint1 = new PlasticScintillator();
+
+  G4RotationMatrix scint1RotMat; scint1RotMat.set(0,0,0);
+  G4double scint1theta = 0.*deg;
+  G4double scint1phi   = 0.*deg;
+  scint1RotMat.rotateY(scint1theta);
+  scint1RotMat.rotateZ(scint1phi);
+
+  //G4ThreeVector scint1translation(-(0.5*mm),fFTSMeasurementPos1,0.);
+  G4ThreeVector scint1translation(0.,0.,0.);
+  scint1->SetRotation(scint1RotMat);
+  scint1->SetPosition(scint1translation);
+  scint1->Placement(0, fPhysiWorld, true);
 
   //
   // Visualization attributes

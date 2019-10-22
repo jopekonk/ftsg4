@@ -6,6 +6,7 @@
 
 #include "MyMaterials.hh"
 #include "GenericGeDetector.hh"
+#include "PlasticScintillator.hh"
 
 class G4Box;
 class G4Polycone;
