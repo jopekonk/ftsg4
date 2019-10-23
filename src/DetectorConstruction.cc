@@ -157,38 +157,40 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
   // Plastic scintillator detectors (beta detectors)
   //
 
+  G4double ScintillatorToTapeDistance = 0.5*mm;
+
   // Measurement position 1, 2pi detector behind the tape
-  PlasticScintillator* scint1 = new PlasticScintillator();
+  PlasticScintillator* scint1 = new PlasticScintillator(1);
   G4RotationMatrix scint1RotMat; scint1RotMat.set(0,0,0);
   G4double scint1theta = 0.*deg;
-  G4double scint1phi   = 0.*deg;
+  G4double scint1phi   = 45.*deg;
   scint1RotMat.rotateY(scint1theta);
   scint1RotMat.rotateZ(scint1phi);
-  G4ThreeVector scint1translation(0.,fFTSMeasurementPos1,(0.5*mm));
+  G4ThreeVector scint1translation(0.,fFTSMeasurementPos1, ScintillatorToTapeDistance);
   scint1->SetRotation(scint1RotMat);
   scint1->SetPosition(scint1translation);
   scint1->Placement(0, fPhysiWorld, true);
 
   // Measurement position 2, detector behind the tape
-  PlasticScintillator* scint2 = new PlasticScintillator();
+  PlasticScintillator* scint2 = new PlasticScintillator(0);
   G4RotationMatrix scint2RotMat; scint2RotMat.set(0,0,0);
   G4double scint2theta = 0.*deg;
   G4double scint2phi   = 0.*deg;
   scint2RotMat.rotateY(scint2theta);
   scint2RotMat.rotateZ(scint2phi);
-  G4ThreeVector scint2translation(0.,fFTSMeasurementPos2,(0.5*mm));
+  G4ThreeVector scint2translation(0.,fFTSMeasurementPos2, ScintillatorToTapeDistance);
   scint2->SetRotation(scint2RotMat);
   scint2->SetPosition(scint2translation);
   scint2->Placement(1, fPhysiWorld, true);
 
   // Measurement position 2, detector on front side of the tape (implantation side)
-  PlasticScintillator* scint3 = new PlasticScintillator();
+  PlasticScintillator* scint3 = new PlasticScintillator(0);
   G4RotationMatrix scint3RotMat; scint3RotMat.set(0,0,0);
   G4double scint3theta = 180.*deg;
   G4double scint3phi   = 0.*deg;
   scint3RotMat.rotateY(scint3theta);
   scint3RotMat.rotateZ(scint3phi);
-  G4ThreeVector scint3translation(0.,fFTSMeasurementPos2,-(0.5*mm));
+  G4ThreeVector scint3translation(0.,fFTSMeasurementPos2, -1.*ScintillatorToTapeDistance);
   scint3->SetRotation(scint3RotMat);
   scint3->SetPosition(scint3translation);
   scint3->Placement(2, fPhysiWorld, true);
