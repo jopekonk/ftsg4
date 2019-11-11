@@ -212,7 +212,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
                                         fLogicTapePlastic, fPhysiWorld,false,0,true);
   fSolidTapeMetal = new G4Box("TapeMetal", fTapeWidth/2.0, fTapeLength/2.0, fTapeMetalThickness/2.0);
   fLogicTapeMetal = new G4LogicalVolume(fSolidTapeMetal, fTapeMetalMaterial, "TapeMetal");
-  fPhysiTapeMetal = new G4PVPlacement(0, G4ThreeVector(0.0,0.0, fTapePlasticThickness+fTapeMetalThickness/2.0),
+  fPhysiTapeMetal = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,fTapePlasticThickness+fTapeMetalThickness/2.0),
                                         "TapeMetal",
                                         fLogicTapeMetal, fPhysiWorld,false,0,true);
 
