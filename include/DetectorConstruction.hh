@@ -46,6 +46,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
      // Distance of the Ge detector from the measurement position (middle of tape) to front face of the detector
      G4double           fGeDistanceSide;
+     G4double           fScintillatorToTapeDistance;
 
      G4double           fTapePlasticThickness;
      G4double           fTapeMetalThickness;

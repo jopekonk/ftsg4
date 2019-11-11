@@ -28,6 +28,7 @@ DetectorConstruction::DetectorConstruction()
   fFTSMeasurementPos3 = -240.*mm; // y-coordinate of the measurement position 3 (Ge detector)
 
   fGeDistanceSide = (180.-115.+25.-80.)*mm; // ISLTFTSA0004 drawing, 10 mm from tape
+  fScintillatorToTapeDistance = 1.5*mm; // Distance of the scintillator to the tape
 
   fTapePlasticThickness = 50.0*um;
   fTapeMetalThickness   = 30.0*nm;
@@ -81,7 +82,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
   //
   // World
   //
-  fSolidWorld = new G4Box("World", 1.5*m, 1.5*m, 1.5*m);
+  fSolidWorld = new G4Box("World", 1.0*m, 1.0*m, 1.0*m);
   fLogicWorld = new G4LogicalVolume(fSolidWorld, fWorldMaterial, "World");
   fPhysiWorld = new G4PVPlacement(0, G4ThreeVector(), fLogicWorld, "World",0,false,0);
 
@@ -157,7 +158,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
   // Plastic scintillator detectors (beta detectors)
   //
 
-  G4double ScintillatorToTapeDistance = 0.5*mm;
+  G4double ScintillatorToTapeDistance = fScintillatorToTapeDistance;
 
   // Measurement position 1, 2pi detector behind the tape
   PlasticScintillator* scint1 = new PlasticScintillator(1);
@@ -172,10 +173,10 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
   scint1->Placement(0, fPhysiWorld, true);
 
   // Measurement position 2, detector behind the tape
-  PlasticScintillator* scint2 = new PlasticScintillator(0);
+  PlasticScintillator* scint2 = new PlasticScintillator(1);
   G4RotationMatrix scint2RotMat; scint2RotMat.set(0,0,0);
   G4double scint2theta = 0.*deg;
-  G4double scint2phi   = 0.*deg;
+  G4double scint2phi   = 45.*deg;
   scint2RotMat.rotateY(scint2theta);
   scint2RotMat.rotateZ(scint2phi);
   G4ThreeVector scint2translation(0.,fFTSMeasurementPos2, ScintillatorToTapeDistance);
@@ -184,10 +185,10 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
   scint2->Placement(1, fPhysiWorld, true);
 
   // Measurement position 2, detector on front side of the tape (implantation side)
-  PlasticScintillator* scint3 = new PlasticScintillator(0);
+  PlasticScintillator* scint3 = new PlasticScintillator(1);
   G4RotationMatrix scint3RotMat; scint3RotMat.set(0,0,0);
   G4double scint3theta = 180.*deg;
-  G4double scint3phi   = 0.*deg;
+  G4double scint3phi   = 45.*deg;
   scint3RotMat.rotateY(scint3theta);
   scint3RotMat.rotateZ(scint3phi);
   G4ThreeVector scint3translation(0.,fFTSMeasurementPos2, -1.*ScintillatorToTapeDistance);
