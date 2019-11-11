@@ -8,8 +8,9 @@
 class TFile;
 class TTree;
 class TH1F;
+class TH2F;
 
-const G4int kMaxHisto = 4;
+const G4int kScintillatorHisto = 3;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -23,7 +24,9 @@ class HistoManager {
     void WriteTree();
     void CloseFile();
 
-    void FillHisto(G4int id, G4double bin, G4double weight = 1.0);
+    void FillScintillatorHistos(G4double e1, G4double e2, G4double e3);
+    void FillGeHisto(G4double e1);
+    void FillCoincHistos(G4double se1, G4double se2, G4double se3, G4double ge1);
 
     void FillNtuple(G4double e1, G4double e2, G4double l1, G4double l2);
 
@@ -31,14 +34,17 @@ class HistoManager {
 
   private:
     TFile*   fRootFile;
-    TH1F*    fHisto[kMaxHisto];
+    TH1F*    fHistoScintillator[kScintillatorHisto];
+    TH1F*    fHistoGe;
+    TH1F*    fHistoGeCoinc4pi;
+    TH2F*    fHistoScintillator4piCoinc;
+    TH1F*    fHistoScintillator4piCoinc2;
+    TH1F*    fHistoScintillator4piCoinc3;
+    TH1F*    fHistoScintillatorSumE;
+    
     TTree*   fNtuple1;
     TTree*   fNtuple2;
 
-    G4double fEabs;
-    G4double fEgap;
-    G4double fLabs;
-    G4double fLgap;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

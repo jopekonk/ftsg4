@@ -17,11 +17,39 @@ SteppingAction::~SteppingAction() { ; }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep) {
-  // get volume of the current step
-  G4VPhysicalVolume* volume = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+
+  G4Track* aTrack = aStep->GetTrack();
+  G4int StepNo = aTrack->GetCurrentStepNumber();
+
+  if(StepNo >= 10000) {
+    aTrack->SetTrackStatus(fStopAndKill);
+    std::cout << "SteppingAction: Step number limit reached (10000). -> Kill track" << std::endl;
+    return;
+  }
+
+  G4VPhysicalVolume*    volume;
+
+  if( aTrack->GetNextVolume() != 0 ) {
+    volume = aTrack->GetVolume();
+  } else {
+    volumeName = "OutOfWorld";
+    aTrack->SetTrackStatus(fStopAndKill);
+    return;
+  }
 
   // collect energy and track length step by step
   G4double edep = aStep->GetTotalEnergyDeposit();
+  volumeName = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+  G4int copyNo = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo();
+
+  if ("germanium" == volumeName) {
+    fEventAction->AddEnergyGe(edep, copyNo);
+  }
+
+  if ("PlasticScintillator" == volumeName) {
+    fEventAction->AddEnergyScintillator(edep, copyNo);
+  }
+
 
 }
 

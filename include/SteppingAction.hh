@@ -2,6 +2,7 @@
 #define SteppingAction_h 1
 
 #include "G4UserSteppingAction.hh"
+#include "globals.hh"
 
 class DetectorConstruction;
 class EventAction;
@@ -19,6 +20,9 @@ public:
 private:
   DetectorConstruction* fDetector;
   EventAction*          fEventAction;
+
+  G4String              volumeName;
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
