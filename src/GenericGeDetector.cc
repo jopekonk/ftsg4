@@ -41,7 +41,7 @@ GenericGeDetector::GenericGeDetector() {
 
   fAlCap2Ge           =   5.0 * mm; // Distance from the front face of the Al end cap to Ge crystal face
   fGeTaperL           =   5.0 * mm; // Length of the tapered front part of the Ge
-  fTotalGeL           =  60.0 * mm; // Full length of the Ge crystal
+  fTotalGeL           =  40.0 * mm; // Full length of the Ge crystal
   fGeInnerD           =  64.0 * mm; // Diameter of the tapered front part of the Ge
   fGeOuterD           =  66.0 * mm; // Diameter of the rest of the Ge
   fEndCapFrontR       =  70.0/2.0 * mm; // Radius of the tapered front part of the Al end cap
