@@ -25,7 +25,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* DC)
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
 
   fParticleGun->SetParticleDefinition(particleTable->FindParticle("e-"));
-  //particleGun->SetParticleDefinition(particleTable->FindParticle("gamma"));
+  //fParticleGun->SetParticleDefinition(particleTable->FindParticle("gamma"));
 
 }
 
@@ -47,9 +47,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   theta_e = acos(cos_theta_e);
   direction.setRThetaPhi( 1.0, theta_e , phi_e );
 
-  //fFTSMeasurementPos1 = 0.0*mm; // y-coordinate of the measurement position 1 (2pi beta counter)
-  //fFTSMeasurementPos2 = -110.*mm; // y-coordinate of the measurement position 2 (4pi beta counter)
-  //fFTSMeasurementPos3 = -240.*mm; // y-coordinate of the measurement position 3 (Ge detector)
+  G4double FTSMeasurementPos1 = 0.0*mm; // y-coordinate of the measurement position 1 (2pi beta counter)
+  G4double FTSMeasurementPos2 = -110.*mm; // y-coordinate of the measurement position 2 (4pi beta counter)
+  G4double FTSMeasurementPos3 = -240.*mm; // y-coordinate of the measurement position 3 (Ge detector)
 
   // Gaussian distribution of the source position in xy plane, ''beam spot''
   //G4double pos_phi = RandFlat::shoot(0., 2*M_PI);
@@ -62,11 +62,13 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
 
   // spot source
   position_x = 0.0*mm;
-  position_y = -110.*mm;
+  position_y = FTSMeasurementPos2;
 
   // Energy
+  particleEnergy = 1000.;
   //particleEnergy = RandFlat::shoot(0.,100.);
-  particleEnergy = 1000.0;
+  //particleEnergy = 1332.5;
+  //particleEnergy = 122.;
 
   //this function is called at the begining of event
   fParticleGun->SetParticlePosition(G4ThreeVector(position_x,position_y,0.));

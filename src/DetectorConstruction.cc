@@ -27,7 +27,8 @@ DetectorConstruction::DetectorConstruction()
   fFTSMeasurementPos2 = -110.*mm; // y-coordinate of the measurement position 2 (4pi beta counter)
   fFTSMeasurementPos3 = -240.*mm; // y-coordinate of the measurement position 3 (Ge detector)
 
-  fGeDistanceSide = (180.-115.+25.-80.)*mm; // ISLTFTSA0004 drawing, 10 mm from tape
+  //fGeDistanceSide = (180.-115.+25.-80.)*mm; // ISLTFTSA0004 drawing, 10 mm from tape
+  fGeDistanceSide = 24*cm; // relative efficiency position (compare to NaI scintillator)
   fScintillatorToTapeDistance = 1.5*mm; // Distance of the scintillator to the tape
 
   fTapePlasticThickness = 50.0*um;
@@ -146,6 +147,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
   rotMatGeDetFlange->rotateZ(geDetFlangePhi);
 
   fLogicGeDetectorFlange = new G4LogicalVolume(fSolidGeDetectorFlange, fGeDetectorFlangeMaterial, "GeDetFlange", 0, 0, 0);
+
   fPhysiGeDetectorFlange = new G4PVPlacement(rotMatGeDetFlange, G4ThreeVector(-fGeDistanceSide, fFTSMeasurementPos3, 0.0*mm),
 				"GeDetFlange",            //its name
 				fLogicGeDetectorFlange,   //its logical volume
@@ -153,6 +155,9 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
 				false,                    //no boolean operat
 				0,                        //copy number
 				true);                    //overlap check
+
+
+
 
   //
   // Plastic scintillator detectors (beta detectors)
@@ -207,15 +212,18 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
   //
   fSolidTapePlastic = new G4Box("TapePlastic", fTapeWidth/2.0, fTapeLength/2.0, fTapePlasticThickness/2.0);
   fLogicTapePlastic = new G4LogicalVolume(fSolidTapePlastic, fTapePlasticMaterial, "TapePlastic");
+
   fPhysiTapePlastic = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,fTapePlasticThickness/2.0),
                                         "TapePlastic",
                                         fLogicTapePlastic, fPhysiWorld,false,0,true);
+
   fSolidTapeMetal = new G4Box("TapeMetal", fTapeWidth/2.0, fTapeLength/2.0, fTapeMetalThickness/2.0);
   fLogicTapeMetal = new G4LogicalVolume(fSolidTapeMetal, fTapeMetalMaterial, "TapeMetal");
+
   fPhysiTapeMetal = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,fTapePlasticThickness+fTapeMetalThickness/2.0),
                                         "TapeMetal",
                                         fLogicTapeMetal, fPhysiWorld,false,0,true);
-
+  
   //
   // Visualization attributes
   //
