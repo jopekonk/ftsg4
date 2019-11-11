@@ -27,8 +27,8 @@ DetectorConstruction::DetectorConstruction()
   fFTSMeasurementPos2 = -110.*mm; // y-coordinate of the measurement position 2 (4pi beta counter)
   fFTSMeasurementPos3 = -240.*mm; // y-coordinate of the measurement position 3 (Ge detector)
 
-  //fGeDistanceSide = (180.-115.+25.-80.)*mm; // ISLTFTSA0004 drawing, 10 mm from tape
-  fGeDistanceSide = 24*cm; // relative efficiency position (compare to NaI scintillator)
+  fGeDistanceSide = (180.-115.+25.-80.)*mm; // ISLTFTSA0004 drawing, 10 mm from tape
+  //fGeDistanceSide = 24*cm; // relative efficiency position 25 cm from source (24+1 below) (compare to NaI scintillator)
   fScintillatorToTapeDistance = 1.5*mm; // Distance of the scintillator to the tape
 
   fTapePlasticThickness = 50.0*um;
@@ -223,7 +223,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructFastTapeStation() {
   fPhysiTapeMetal = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,fTapePlasticThickness+fTapeMetalThickness/2.0),
                                         "TapeMetal",
                                         fLogicTapeMetal, fPhysiWorld,false,0,true);
-  
+
   //
   // Visualization attributes
   //
