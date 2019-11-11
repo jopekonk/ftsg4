@@ -42,7 +42,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep) {
   volumeName = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
   G4int copyNo = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo();
 
-  if ("germanium" == volumeName) {
+  if ("Ge" == volumeName) {
     fEventAction->AddEnergyGe(edep, copyNo);
   }
 

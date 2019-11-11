@@ -10,7 +10,7 @@
 EventAction::EventAction(RunAction* run, HistoManager* histo)
 :G4UserEventAction(), fRunAct(run),fHistoManager(histo), fPrintModulo(0)
 {
-  fPrintModulo=1000;
+  fPrintModulo=10000;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
