@@ -3,6 +3,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <CLHEP/Units/SystemOfUnits.h>
+
 using namespace CLHEP;
 
 #include "HistoManager.hh"
@@ -27,6 +28,10 @@ HistoManager::~HistoManager() {
 
 void HistoManager::Initialize() {
 
+  trandom = new TRandom3();
+  trandom->SetSeed();
+  srand((unsigned)time(NULL));
+
   // Creating a tree container to handle histograms and ntuples.
   // This tree is associated to an output file.
   G4String fileName = "output.root";
@@ -46,8 +51,9 @@ void HistoManager::Initialize() {
   fHistoScintillator4piCoinc = new TH2F("ScintillatorCoinc4pi", "Coincidence energy in 4pi scintillators (keV)", 1000, 0., 2000., 1000, 0., 2000.);
   fHistoScintillator4piCoinc2 = new TH1F("ScintillatorCoinc4piE2", "Coincidence energy in scintillator det 2 (4pi, back) (keV)", 1000, 0., 2000.);
   fHistoScintillator4piCoinc3 = new TH1F("ScintillatorCoinc4piE3", "Coincidence energy in scintillator det 3 (4pi, front) (keV)", 1000, 0., 2000.);
+  fHistoScintillatorCoincSumE = new TH1F("ScintillatorCoincSumE", "Coincidence summed energy in scintillators 2 and 3 (keV)", 1000, 0., 2000.);
 
-  fHistoGe = new TH1F("GermaniumE", "Energy in germanium det (keV)", 2000, 0., 2000.);
+  fHistoGe = new TH1F("GermaniumE", "Energy in germanium det (keV)", 4000, 0., 2000.);
   fHistoGeCoinc4pi = new TH1F("GermaniumCoincE4pi", "Coincidence energy in germanium (keV)", 2000, 0., 2000.);
 
   // create ntuples
@@ -86,43 +92,91 @@ void HistoManager::CloseFile() {
   G4cout << "\n HistoManager.cc:: ----> Output file is closed.\n" << G4endl;
 }
 
+// Apply a gaussian skew to the measured Ge energy
+G4double HistoManager::GetGeEnergyResolution(G4double energy) {
+
+  // FWHM: 1.2 keV @ 122 keV and 2.0 keV @ 1.3 MeV
+  // For simplicity, assume linear behaviour of the resolution dependence on the gamma-ray energy.
+  // Solve for resolution = a+b*x , where x is the gamma-ray energy
+  double b = (2.0-1.2)/(1332.5-122.);
+  double a = 2.-1332.5*b;
+
+  double resolution = a+b*(energy/keV);
+  double sigma = resolution/2.35489652;
+  double skew = trandom->Gaus(0.0,sigma);
+  G4double result = skew*keV;
+  if (energy/keV < resolution) return 0.;  // don't bother with low energy stuff
+  else return result;
+}
+
+// Apply a gaussian skew to the measured scintillator energy
+G4double HistoManager::GetScintillatorEnergyResolution(G4double energy) {
+
+
+
+ // No information on the resolution => assume constant resolution
+ double resolution = 10.0; // in keV
+ double sigma = resolution/2.35489652;
+ double skew = trandom->Gaus(0.0,sigma);
+ G4double result = skew*keV;
+ if (energy/keV < resolution) return 0.;  // don't bother with low energy stuff
+ else return result;
+}
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void HistoManager::FillScintillatorHistos(G4double e1, G4double e2, G4double e3) {
 
-  G4double lowThreshold = 0.0001*keV;
+  G4double lowThreshold = 0.1*keV;
 
-  if (e1 > lowThreshold) { fHistoScintillator[0]->Fill(e1/keV); }
-  if (e2 > lowThreshold) { fHistoScintillator[1]->Fill(e2/keV); }
-  if (e3 > lowThreshold) { fHistoScintillator[2]->Fill(e3/keV); }
+  // Apply some finite energy resolution
+  G4double rese1 = e1 + GetScintillatorEnergyResolution(e1);
+  G4double rese2 = e2 + GetScintillatorEnergyResolution(e2);
+  G4double rese3 = e3 + GetScintillatorEnergyResolution(e3);
 
-  G4double sumE = e1+e2+e3;
+  if (rese1 > lowThreshold) { fHistoScintillator[0]->Fill(rese1/keV); }
+  if (rese2 > lowThreshold) { fHistoScintillator[1]->Fill(rese2/keV); }
+  if (rese3 > lowThreshold) { fHistoScintillator[2]->Fill(rese3/keV); }
+
+  G4double sumE = rese1+rese2+rese3;
   if (sumE > lowThreshold) { fHistoScintillatorSumE->Fill(sumE/keV); }
 
 }
 
 void HistoManager::FillGeHisto(G4double e1) {
 
-  G4double lowThreshold = 0.0001*keV;
-  if (e1 > lowThreshold) { fHistoGe->Fill(e1/keV); }
+  G4double lowThreshold = 0.1*keV;
+  if (e1 < lowThreshold) return;
+
+  // Apply some finite energy resolution
+  G4double resE = e1 + GetGeEnergyResolution(e1);
+
+  if (resE > lowThreshold) { fHistoGe->Fill(resE/keV); }
 
 }
 
 
 void HistoManager::FillCoincHistos(G4double se1, G4double se2, G4double se3, G4double ge1) {
 
-  G4double lowThreshold = 0.0001*keV;
+  G4double lowThreshold = 0.1*keV;
+
+  G4double rese1 = se1 + GetScintillatorEnergyResolution(se1);
+  G4double rese2 = se2 + GetScintillatorEnergyResolution(se2);
+  G4double rese3 = se3 + GetScintillatorEnergyResolution(se3);
+
+  G4double resge1 = ge1 + GetGeEnergyResolution(ge1);
 
   // Coincidences in the 4pi scintillators
-  if (se2 > lowThreshold && se3 > lowThreshold) {
-    fHistoScintillator4piCoinc->Fill(se2/keV,se3/keV);
-    fHistoScintillator4piCoinc2->Fill(se2/keV);
-    fHistoScintillator4piCoinc3->Fill(se3/keV);
+  if (rese2 > lowThreshold && rese3 > lowThreshold) {
+    fHistoScintillator4piCoinc->Fill(rese2/keV,rese3/keV);
+    fHistoScintillator4piCoinc2->Fill(rese2/keV);
+    fHistoScintillator4piCoinc3->Fill(rese3/keV);
+    fHistoScintillatorCoincSumE->Fill(rese2/keV+rese3/keV);
   }
 
   // Coincidences in the germanium detector with either of the 4pi scintillator
-  if (ge1 > lowThreshold && (se2 > lowThreshold || se3 > lowThreshold) ) {
-    fHistoGeCoinc4pi->Fill(ge1/keV);
+  if (resge1 > lowThreshold && (rese2 > lowThreshold || rese3 > lowThreshold) ) {
+    fHistoGeCoinc4pi->Fill(resge1/keV);
   }
 }
 
