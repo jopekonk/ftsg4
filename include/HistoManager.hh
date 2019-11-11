@@ -3,6 +3,11 @@
 
 #include "globals.hh"
 
+#include "TRandom.h"
+#include "TRandom2.h"
+#include "TRandom3.h"
+#include "TMath.h"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class TFile;
@@ -24,6 +29,9 @@ class HistoManager {
     void WriteTree();
     void CloseFile();
 
+    G4double GetGeEnergyResolution(G4double energy);
+    G4double GetScintillatorEnergyResolution(G4double energy);
+
     void FillScintillatorHistos(G4double e1, G4double e2, G4double e3);
     void FillGeHisto(G4double e1);
     void FillCoincHistos(G4double se1, G4double se2, G4double se3, G4double ge1);
@@ -33,6 +41,9 @@ class HistoManager {
     void PrintStatistic();
 
   private:
+
+    TRandom  *trandom;
+
     TFile*   fRootFile;
     TH1F*    fHistoScintillator[kScintillatorHisto];
     TH1F*    fHistoGe;
@@ -41,7 +52,8 @@ class HistoManager {
     TH1F*    fHistoScintillator4piCoinc2;
     TH1F*    fHistoScintillator4piCoinc3;
     TH1F*    fHistoScintillatorSumE;
-    
+    TH1F*    fHistoScintillatorCoincSumE;
+
     TTree*   fNtuple1;
     TTree*   fNtuple2;
 
