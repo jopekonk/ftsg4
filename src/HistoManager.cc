@@ -42,18 +42,18 @@ void HistoManager::Initialize() {
   }
 
   // Create histograms
-  fHistoScintillator[0] = new TH1F("ScintillatorE1", "Energy in scintillator det 1 (2pi, back) (keV)", 1000, 0., 2000.);
-  fHistoScintillator[1] = new TH1F("ScintillatorE2", "Energy in scintillator det 2 (4pi, back) (keV)", 1000, 0., 2000.);
-  fHistoScintillator[2] = new TH1F("ScintillatorE3", "Energy in scintillator det 3 (4pi, front) (keV)", 1000, 0., 2000.);
+  fHistoScintillator[0] = new TH1F("ScintillatorE1", "Energy in scintillator det 1 (2pi, back) (keV)", 2000, 0., 2000.);
+  fHistoScintillator[1] = new TH1F("ScintillatorE2", "Energy in scintillator det 2 (4pi, back) (keV)", 2000, 0., 2000.);
+  fHistoScintillator[2] = new TH1F("ScintillatorE3", "Energy in scintillator det 3 (4pi, front) (keV)", 2000, 0., 2000.);
 
-  fHistoScintillatorSumE = new TH1F("ScintillatorSumE", "Summed energy in scintillators (keV)", 1000, 0., 2000.);
+  fHistoScintillatorSumE = new TH1F("ScintillatorSumE", "Summed energy in scintillators (keV)", 2000, 0., 2000.);
 
-  fHistoScintillator4piCoinc = new TH2F("ScintillatorCoinc4pi", "Coincidence energy in 4pi scintillators (keV)", 1000, 0., 2000., 1000, 0., 2000.);
-  fHistoScintillator4piCoinc2 = new TH1F("ScintillatorCoinc4piE2", "Coincidence energy in scintillator det 2 (4pi, back) (keV)", 1000, 0., 2000.);
-  fHistoScintillator4piCoinc3 = new TH1F("ScintillatorCoinc4piE3", "Coincidence energy in scintillator det 3 (4pi, front) (keV)", 1000, 0., 2000.);
-  fHistoScintillatorCoincSumE = new TH1F("ScintillatorCoincSumE", "Coincidence summed energy in scintillators 2 and 3 (keV)", 1000, 0., 2000.);
+  fHistoScintillator4piCoinc = new TH2F("ScintillatorCoinc4pi", "Coincidence energy in 4pi scintillators (keV)", 2000, 0., 2000., 2000, 0., 2000.);
+  fHistoScintillator4piCoinc2 = new TH1F("ScintillatorCoinc4piE2", "Coincidence energy in scintillator det 2 (4pi, back) (keV)", 2000, 0., 2000.);
+  fHistoScintillator4piCoinc3 = new TH1F("ScintillatorCoinc4piE3", "Coincidence energy in scintillator det 3 (4pi, front) (keV)", 2000, 0., 2000.);
+  fHistoScintillatorCoincSumE = new TH1F("ScintillatorCoincSumE", "Coincidence summed energy in scintillators 2 and 3 (keV)", 2000, 0., 2000.);
 
-  fHistoGe = new TH1F("GermaniumE", "Energy in germanium det (keV)", 4000, 0., 2000.);
+  fHistoGe = new TH1F("GermaniumE", "Energy in germanium det (keV)", 2000, 0., 2000.);
   fHistoGeCoinc4pi = new TH1F("GermaniumCoincE4pi", "Coincidence energy in germanium (keV)", 2000, 0., 2000.);
 
   // create ntuples
