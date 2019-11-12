@@ -4,6 +4,8 @@
 #include "G4UserRunAction.hh"
 #include "globals.hh"
 
+class RunActionMessenger;
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Run;
@@ -17,9 +19,13 @@ public:
 
   virtual void BeginOfRunAction(const G4Run*);
   virtual void   EndOfRunAction(const G4Run*);
+  void SetFileName(G4String);
 
 private:
   HistoManager* fHistoManager;
+  RunActionMessenger*  fRunMessenger;
+
+  G4String      fOutputFileName;
 
 };
 

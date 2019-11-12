@@ -26,7 +26,7 @@ HistoManager::~HistoManager() {
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void HistoManager::Initialize() {
+void HistoManager::Initialize(G4String outputfile) {
 
   trandom = new TRandom3();
   trandom->SetSeed();
@@ -34,8 +34,8 @@ void HistoManager::Initialize() {
 
   // Creating a tree container to handle histograms and ntuples.
   // This tree is associated to an output file.
-  G4String fileName = "output.root";
-  fRootFile = new TFile(fileName,"RECREATE");
+
+  fRootFile = new TFile(outputfile,"RECREATE");
   if (! fRootFile) {
     G4cout << " HistoManager.cc:: problem creating the ROOT TFile " << G4endl;
     return;
@@ -66,7 +66,7 @@ void HistoManager::Initialize() {
   //fNtuple2->Branch("Labs", &fLabs, "Labs/D");
   //fNtuple2->Branch("Lgap", &fLgap, "Lgap/D");
 
-  G4cout << "\n HistoManager.cc:: ----> Output file is open in " << fileName << G4endl;
+  G4cout << "\n HistoManager.cc:: ----> Output file is open in " << outputfile << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

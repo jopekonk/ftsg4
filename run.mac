@@ -5,7 +5,17 @@
 #
 # initialize
 /run/initialize
-#
-/gun/particle e-
-/gun/energy 500 keV
-/run/beamOn 1000
+
+# set output file name
+/ftsg4/output/setFilename output.root
+
+# particle 1 == e-, 2 == gamma
+/ftsg4/gun/particle 1
+
+# particle energy with unit
+/ftsg4/gun/energy 200 keV
+
+# 1 == pos1 (2pi), 2 == pos2 (4pi), 3 == pos3 (Ge)
+/ftsg4/gun/position 2
+
+/run/beamOn 10000

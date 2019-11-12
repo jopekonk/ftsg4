@@ -24,7 +24,7 @@ class HistoManager {
     HistoManager();
    ~HistoManager();
 
-    void Initialize();
+    void Initialize(G4String);
     void Save();
     void WriteTree();
     void CloseFile();
