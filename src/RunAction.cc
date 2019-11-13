@@ -9,7 +9,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RunAction::RunAction(HistoManager* histo)
-: G4UserRunAction(), fHistoManager(histo) {
+: G4UserRunAction(), fHistoManager(histo), fOutputFileName("") {
   fRunMessenger = new RunActionMessenger(this);
 }
 
