@@ -37,6 +37,12 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep) {
     return;
   }
 
+  // Test accepting only electrons or gammas here
+  //G4ParticleDefinition* particle = aTrack->GetDefinition();
+  //G4String particleName = particle->GetParticleName();
+  //if( particleName != "e-" ) return;
+  //if (particleName != "gamma") return;
+
   // collect energy and track length step by step
   G4double edep = aStep->GetTotalEnergyDeposit();
   volumeName = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
