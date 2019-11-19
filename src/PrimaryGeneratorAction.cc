@@ -74,6 +74,45 @@ void PrimaryGeneratorAction::SetSourcePositionY(G4int pos) {
   }
 }
 
+void PrimaryGeneratorAction::GenerateRadioactiveDecay(G4Event* anEvent) {
+
+  G4double position_x, position_y, position_z;
+  G4ThreeVector direction;
+
+  // Gaussian distribution of the source position in xy plane, ''beam spot''
+  //G4double pos_phi = RandFlat::shoot(0., 2*M_PI);
+  //double beamradius = 3.; // beam width in FWHM
+  //double sigma = beamradius / 2.35489652; //
+  //double radius = RandGauss::shoot(0.,sigma);
+  //if (beamradius < 0.) beamradius = -beamradius;
+  //position_x = radius*cos(pos_phi)*mm;
+  //position_y = -110.*mm + radius*sin(pos_phi)*mm;
+
+  // spot source
+  position_x = 0.0*mm;
+  position_y = fSourcePositionY;
+  position_z = 0.0*mm;
+
+  fParticleGun->SetParticleEnergy(0.0*MeV);
+  fParticleGun->SetParticlePosition(G4ThreeVector(position_x,position_y,position_z));
+  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,0.));
+
+  if (fParticleGun->GetParticleDefinition() == G4Geantino::Geantino()) {
+    //G4int Z = 56; G4int A = 133; // 133Ba
+    G4int Z = 27; G4int A = 60; // 60Co
+    G4double ionCharge   = 0.*eplus;
+    G4double excitEnergy = 0.*keV;
+
+    //G4ParticleDefinition* ion = G4ParticleTable::GetParticleTable()->GetIon(Z,A,excitEnergy);
+    G4ParticleDefinition* ion = G4IonTable::GetIonTable()->GetIon(Z,A,excitEnergy);
+    fParticleGun->SetParticleDefinition(ion);
+    fParticleGun->SetParticleCharge(ionCharge);
+  }
+
+  fParticleGun->GeneratePrimaryVertex(anEvent);
+
+}
+
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
 
   switch(fParticleType) {
@@ -83,6 +122,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     case 2:
         fParticleGun->SetParticleDefinition(particleTable->FindParticle("gamma"));
         break;
+    case 3:
+        GenerateRadioactiveDecay(anEvent);
+        return;
     default:
         fParticleGun->SetParticleDefinition(particleTable->FindParticle("e-"));
   }

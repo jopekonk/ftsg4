@@ -5,12 +5,14 @@
 #include "globals.hh"
 
 #include "G4Event.hh"
+#include "G4IonTable.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
 #include "G4ThreeVector.hh"
+#include "G4Geantino.hh"
 
 class G4ParticleGun;
 class G4Event;
@@ -32,6 +34,8 @@ public:
   void SetSourcePosition(G4int);
 
   void SetSourcePositionY(G4int);
+
+  void GenerateRadioactiveDecay(G4Event*);
 
 private:
   G4ParticleGun*           fParticleGun;

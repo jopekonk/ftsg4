@@ -21,6 +21,7 @@ public:
 
   virtual void ConstructProcess();
   void AddStepMax();
+  void AddDecay();
 
 private:
 

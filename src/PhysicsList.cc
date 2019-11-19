@@ -31,6 +31,17 @@
 #include "G4ParticleDefinition.hh"
 #include "G4ProcessManager.hh"
 
+//
+#include "G4ParticleTypes.hh"
+#include "G4IonConstructor.hh"
+#include "G4PhysicsListHelper.hh"
+#include "G4RadioactiveDecay.hh"
+#include "G4NuclideTable.hh"
+#include "G4LossTableManager.hh"
+#include "G4UAtomicDeexcitation.hh"
+#include "G4NuclearLevelData.hh"
+#include "G4DeexPrecoParameters.hh"
+
 // particles
 #include "G4BosonConstructor.hh"
 #include "G4LeptonConstructor.hh"
@@ -44,6 +55,28 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 PhysicsList::PhysicsList() : G4VModularPhysicsList(), fHadPhysicsList(nullptr) {
+
+  // units for radioActive decays
+  const G4double minute = 60*second;
+  const G4double hour   = 60*minute;
+  const G4double day    = 24*hour;
+  const G4double year   = 365*day;
+  new G4UnitDefinition("minute", "min", "Time", minute);
+  new G4UnitDefinition("hour",   "h",   "Time", hour);
+  new G4UnitDefinition("day",    "d",   "Time", day);
+  new G4UnitDefinition("year",   "y",   "Time", year);
+
+  // mandatory for G4NuclideTable
+  G4NuclideTable::GetInstance()->SetThresholdOfHalfLife(0.1*picosecond);
+  G4NuclideTable::GetInstance()->SetLevelTolerance(1.0*eV);
+
+  //read new PhotonEvaporation data set
+  G4DeexPrecoParameters* deex = G4NuclearLevelData::GetInstance()->GetParameters();
+  deex->SetCorrelatedGamma(false);
+  deex->SetStoreAllLevels(true);
+  deex->SetMaxLifeTime( G4NuclideTable::GetInstance()->GetThresholdOfHalfLife() / std::log(2.) );
+
+
   fMessenger = new PhysicsListMessenger(this);
   SetVerboseLevel(1);
 
@@ -54,7 +87,7 @@ PhysicsList::PhysicsList() : G4VModularPhysicsList(), fHadPhysicsList(nullptr) {
   // Decay physics
   fDecayPhysics = new G4DecayPhysics(1);
 
-  SetDefaultCutValue(0.1*mm);
+  SetDefaultCutValue(0.01*mm);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -68,6 +101,9 @@ PhysicsList::~PhysicsList() {
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void PhysicsList::ConstructParticle() {
+
+  // pseudo-particles
+  G4Geantino::GeantinoDefinition();
 
   G4BosonConstructor  pBosonConstructor;
   pBosonConstructor.ConstructParticle();
@@ -99,7 +135,11 @@ void PhysicsList::ConstructParticle() {
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void PhysicsList::ConstructProcess() {
+
   AddTransportation();
+
+  AddDecay();
+
   fEmPhysicsList->ConstructProcess();
   fDecayPhysics->ConstructProcess();
   if(fHadPhysicsList) { fHadPhysicsList->ConstructProcess(); }
@@ -127,10 +167,35 @@ void PhysicsList::AddStepMax() {
   */
 }
 
+void PhysicsList::AddDecay() {
+
+  G4RadioactiveDecay* radioactiveDecay = new G4RadioactiveDecay();
+
+  G4bool ARMflag = false;
+  radioactiveDecay->SetARM(ARMflag); //Atomic Rearangement
+
+  // Initialize atomic deexcitation
+  G4LossTableManager* man = G4LossTableManager::Instance();
+  G4VAtomDeexcitation* deex = man->AtomDeexcitation();
+  if (!deex) {
+     ///G4EmParameters::Instance()->SetFluo(true);
+     G4EmParameters::Instance()->SetAugerCascade(ARMflag);
+     deex = new G4UAtomicDeexcitation();
+     deex->InitialiseAtomicDeexcitation();
+     man->SetAtomDeexcitation(deex);
+  }
+
+  // register radioactiveDecay
+  //
+  G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+  ph->RegisterProcess(radioactiveDecay, G4GenericIon::GenericIon());
+
+}
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void PhysicsList::AddPhysicsList(const G4String& name) {
- 
+
   if (verboseLevel>-1) {
     G4cout << "PhysicsList::AddPhysicsList: <" << name << ">" << G4endl;
   }
