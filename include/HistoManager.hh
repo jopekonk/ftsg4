@@ -47,12 +47,15 @@ class HistoManager {
     TFile*   fRootFile;
     TH1F*    fHistoScintillator[kScintillatorHisto];
     TH1F*    fHistoGe;
-    TH1F*    fHistoGeCoinc4pi;
+    TH1F*    fHistoGe4piCoinc;
+    TH2F*    fHistoGeScintillator2Coinc;
+    TH2F*    fHistoGeScintillator3Coinc;
+
     TH2F*    fHistoScintillator4piCoinc;
     TH1F*    fHistoScintillator4piCoinc2;
     TH1F*    fHistoScintillator4piCoinc3;
-    TH1F*    fHistoScintillatorSumE;
-    TH1F*    fHistoScintillatorCoincSumE;
+    TH1F*    fHistoScintillator4piSumE;
+    TH1F*    fHistoScintillator4piCoincSumE;
 
     TTree*   fNtuple1;
     TTree*   fNtuple2;

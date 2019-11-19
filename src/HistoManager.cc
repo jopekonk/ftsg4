@@ -34,7 +34,7 @@ void HistoManager::Initialize(G4String outputfile) {
 
   // Creating a tree container to handle histograms and ntuples.
   // This tree is associated to an output file.
-
+  if ("" == outputfile) outputfile = "output.root";
   fRootFile = new TFile(outputfile,"RECREATE");
   if (! fRootFile) {
     G4cout << " HistoManager.cc:: problem creating the ROOT TFile " << G4endl;
@@ -46,15 +46,17 @@ void HistoManager::Initialize(G4String outputfile) {
   fHistoScintillator[1] = new TH1F("ScintillatorE2", "Energy in scintillator det 2 (4pi, back) (keV)", 2000, 0., 2000.);
   fHistoScintillator[2] = new TH1F("ScintillatorE3", "Energy in scintillator det 3 (4pi, front) (keV)", 2000, 0., 2000.);
 
-  fHistoScintillatorSumE = new TH1F("ScintillatorSumE", "Summed energy in scintillators (keV)", 2000, 0., 2000.);
+  fHistoScintillator4piSumE = new TH1F("Scintillator4piSumE", "Summed energy in scintillators 2 and 3 at pos2 (4pi) (keV)", 2000, 0., 2000.);
 
-  fHistoScintillator4piCoinc = new TH2F("ScintillatorCoinc4pi", "Coincidence energy in 4pi scintillators (keV)", 2000, 0., 2000., 2000, 0., 2000.);
-  fHistoScintillator4piCoinc2 = new TH1F("ScintillatorCoinc4piE2", "Coincidence energy in scintillator det 2 (4pi, back) (keV)", 2000, 0., 2000.);
-  fHistoScintillator4piCoinc3 = new TH1F("ScintillatorCoinc4piE3", "Coincidence energy in scintillator det 3 (4pi, front) (keV)", 2000, 0., 2000.);
-  fHistoScintillatorCoincSumE = new TH1F("ScintillatorCoincSumE", "Coincidence summed energy in scintillators 2 and 3 (keV)", 2000, 0., 2000.);
+  fHistoScintillator4piCoinc = new TH2F("Scintillator4piCoinc", "Coincidence energy in scintillators 2 and 3 at pos2 (4pi) (keV)", 2000, 0., 2000., 2000, 0., 2000.);
+  fHistoScintillator4piCoinc2 = new TH1F("Scintillator4piCoincE2", "Coincidence energy in scintillator det 2 at pos 2 (4pi, back) (keV)", 2000, 0., 2000.);
+  fHistoScintillator4piCoinc3 = new TH1F("Scintillator4piCoincE3", "Coincidence energy in scintillator det 3 at pos 2 (4pi, front) (keV)", 2000, 0., 2000.);
+  fHistoScintillator4piCoincSumE = new TH1F("ScintillatorCoincSumE", "Coincidence summed energy in scintillators 2 and 3 at pos 2 (4pi) (keV)", 2000, 0., 2000.);
 
-  fHistoGe = new TH1F("GermaniumE", "Energy in germanium det (keV)", 2000, 0., 2000.);
-  fHistoGeCoinc4pi = new TH1F("GermaniumCoincE4pi", "Coincidence energy in germanium (keV)", 2000, 0., 2000.);
+  fHistoGe = new TH1F("GermaniumE", "Energy in germanium det at pos 3 (keV)", 2000, 0., 2000.);
+  fHistoGe4piCoinc = new TH1F("Germanium4piCoinc", "Energy in germanium det at pos 3 in coincidence with 4pi scintillators (keV)", 2000, 0., 2000.);
+  fHistoGeScintillator2Coinc = new TH2F("GeScintillator2Coinc", "Coincidence energy in Ge with scintillator 2 at pos2 (4pi) (keV)", 2000, 0., 2000., 2000, 0., 2000.);
+  fHistoGeScintillator3Coinc = new TH2F("GeScintillator3Coinc", "Coincidence energy in Ge with scintillator 3 at pos2 (4pi) (keV)", 2000, 0., 2000., 2000, 0., 2000.);
 
   // create ntuples
   //fNtuple1 = new TTree("Ntuple1", "Edep");
@@ -138,8 +140,8 @@ void HistoManager::FillScintillatorHistos(G4double e1, G4double e2, G4double e3)
   if (rese2 > lowThreshold) { fHistoScintillator[1]->Fill(rese2/keV); }
   if (rese3 > lowThreshold) { fHistoScintillator[2]->Fill(rese3/keV); }
 
-  G4double sumE = rese1+rese2+rese3;
-  if (sumE > lowThreshold) { fHistoScintillatorSumE->Fill(sumE/keV); }
+  G4double sumE = rese2+rese3;
+  if (sumE > lowThreshold) { fHistoScintillator4piSumE->Fill(sumE/keV); }
 
 }
 
@@ -171,12 +173,14 @@ void HistoManager::FillCoincHistos(G4double se1, G4double se2, G4double se3, G4d
     fHistoScintillator4piCoinc->Fill(rese2/keV,rese3/keV);
     fHistoScintillator4piCoinc2->Fill(rese2/keV);
     fHistoScintillator4piCoinc3->Fill(rese3/keV);
-    fHistoScintillatorCoincSumE->Fill(rese2/keV+rese3/keV);
+    fHistoScintillator4piCoincSumE->Fill(rese2/keV+rese3/keV);
   }
 
   // Coincidences in the germanium detector with either of the 4pi scintillator
   if (resge1 > lowThreshold && (rese2 > lowThreshold || rese3 > lowThreshold) ) {
-    fHistoGeCoinc4pi->Fill(resge1/keV);
+    fHistoGe4piCoinc->Fill(resge1/keV);
+    if (rese2 > lowThreshold) fHistoGeScintillator2Coinc->Fill(resge1/keV, rese2/keV);
+    if (rese3 > lowThreshold) fHistoGeScintillator3Coinc->Fill(resge1/keV, rese3/keV);
   }
 }
 
